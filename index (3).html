@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>30 Days Sprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--card:#fff;--ink:#1b1720;--mut:#625a68;--line:#eadfee;--br:#b5149a;--bi:#fff;--ac:#fbb73b;--ai:#111;--sf:#f4eff7;--ok:#0E9A72;--wa:#b86a00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15101a;--card:#1f1825;--ink:#f4eff7;--mut:#b3a9ba;--line:#3a2f42;--br:#e864d3;--bi:#1b1720;--sf:#2a2130;--ok:#35D3A4;--wa:#fbb73b}}
+:root[data-theme="dark"]{--bg:#15101a;--card:#1f1825;--ink:#f4eff7;--mut:#b3a9ba;--line:#3a2f42;--br:#e864d3;--bi:#1b1720;--sf:#2a2130;--ok:#35D3A4;--wa:#fbb73b}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Lexend,system-ui,sans-serif;padding-bottom:84px}
+h1,h2,h3{font-family:Lexend,system-ui,sans-serif;line-height:1.12;margin:0 0 8px}h1,h2{font-family:Anton,Impact,'Arial Narrow',sans-serif;font-weight:400;letter-spacing:.01em}
+h1{font-size:38px}h2{font-size:26px}h3{font-size:17px;font-weight:700}
+main{max-width:620px;margin:0 auto;padding:18px 16px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 14px}
+.hero{background:var(--br);color:var(--bi);border:0}
+.mut{color:var(--mut);font-size:14px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
+button,.btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:13px 18px;background:var(--ac);color:var(--ai);cursor:pointer}
+.hero button{background:var(--ac);color:var(--ai)}
+button.g{background:transparent;color:var(--br);border:1.5px solid var(--br)}
+button.big{width:100%;font-size:18px;padding:16px}
+input,textarea,select{font:inherit;width:100%;padding:11px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);margin:4px 0 12px}
+label{font-weight:700;font-size:14px}textarea{min-height:76px}
+:focus-visible{outline:3px solid var(--br);outline-offset:2px}
+.bar{height:10px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stats div{background:var(--sf);border-radius:12px;padding:10px;text-align:center}.stats b{display:block;font:400 26px Anton,Impact,sans-serif}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;color:var(--mut);border-radius:0;padding:12px 2px;font-size:13px}nav button.on{color:var(--br);box-shadow:inset 0 3px var(--br)}
+.step{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.step:first-of-type{border:0}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--bg);font-size:13px;font-weight:700;border:1px solid var(--line)}
+.warn{border-color:var(--wa)}.me td{font-weight:800;color:var(--br)}
+table{width:100%;border-collapse:collapse}td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+.map{border-left:3px solid var(--line);margin-left:8px;padding-left:14px}.map div{position:relative;padding:6px 0}.map div:before{content:'';position:absolute;left:-21px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--line)}.map .d:before{background:var(--ok)}.map .n:before{background:var(--br)}
+canvas{width:100%;border-radius:14px;margin-bottom:10px}
+@media(prefers-reduced-motion:no-preference){.pop{animation:p .5s}@keyframes p{from{transform:scale(.96);opacity:.4}}}
+</style></head><body><main id="app"></main><nav id="nav" hidden></nav>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S=null;try{S=JSON.parse(localStorage.getItem('s30')||'null')}catch(e){}
+const save=()=>{try{localStorage.setItem('s30',JSON.stringify(S))}catch(e){}pushLB()};
+let tab='today',edit=null,msg='',card=false,lb='Overall';
+const PH=[[5,'Idea & research','Define the problem and collect 3 examples of what good looks like.'],[10,'Foundation','Set up the core structure or tools for your build.'],[15,'First version','Make a rough first version that works, however ugly.'],[21,'Build','Add the next most important feature or section.'],[26,'Improve','Fix the weakest part and test it with one real person.'],[29,'Polish','Tidy, document and prepare to show it.'],[30,'Showcase','Show what you built.']];
+const ph=n=>PH.find(p=>n<=p[0]);
+const cur=()=>Math.max(1,Math.min(30,Math.floor((Date.now()-S.start)/864e5)+1+S.off));
+const D=n=>S.days[n]||{},done=n=>!!D(n).done;
+const cnt=()=>Object.values(S.days).filter(d=>d.done).length;
+function streak(){let d=cur();if(!done(d))d--;let c=0;while(d>0&&done(d)){c++;d--}return c}
+function maxStreak(){let m=0,c=0;for(let i=1;i<=30;i++){c=done(i)?c+1:0;m=Math.max(m,c)}return m}
+function pts(){let p=0;Object.values(S.days).forEach(d=>{if(d.done)p+=(d.learned?10:0)+(d.built?25:0)+(d.proof?15:0)+(d.next?5:0)});const m=maxStreak();[[3,10],[7,25],[14,50],[21,75]].forEach(a=>{if(m>=a[0])p+=a[1]});
+return p+Object.keys(S.ms).length*50+(S.early?75:0)+S.helps*10+(done(30)?150:0)+(S.show.result?100:0)}
+function level(){const c=cnt();return done(30)?'SPRINT COMPLETED':c>=27?'MASTER IN PROGRESS':c>=18?'EXECUTOR':(c>=9||S.early)?'BUILDER':c>=3?'CONSISTENT':'SPRINTER'}
+function ratio(){const l=Object.values(S.days).filter(d=>d.done&&d.learned).length,a=Object.values(S.days).filter(d=>d.done&&d.built&&d.proof).length;return l?Math.min(100,Math.round(a/l*100)):0}
+function missed(){let m=0,d=cur()-1;while(d>0&&!done(d)){m++;d--}return m}
+function mins(){const t=+S.p.mins;return[Math.round(t*.3),Math.round(t*.55),Math.max(5,Math.round(t*.15))]}
+function coach(){const ds=Object.values(S.days).filter(d=>d.done),hard=ds.slice(-3).filter(d=>d.diff==='Too hard').length,r=ratio();
+if(hard>=2)return'Detect: your last days felt too hard. Diagnose: the tasks are likely bigger than your '+S.p.mins+'-minute window. Adjust: cut today’s build to one small piece and finish it.';
+if(!ds.length)return'Start small. One tiny output today proves this is doable.';
+if(r>=80)return'Encourage: your Action Ratio is '+r+'%. You’re turning learning into output. Challenge: build the next feature before you learn anything new.';
+return'Challenge: you have learned enough to apply it. Today, make something with what you learned before you watch or read more.'}
+function setup(){const f=new FormData($('#f')),g=k=>(f.get(k)||'').trim();
+if(!g('name')||!g('skill')||!g('goal')||!g('outcome')){alert('Add your name, skill, 30-day goal and Day 30 outcome to continue.');return}
+S={p:{focus:g('focus'),name:g('name'),bio:g('bio'),skill:g('skill'),goal:g('goal'),why:g('why'),mins:g('mins'),outcome:g('outcome'),learn:g('learn'),build:g('build'),prove:g('prove'),pic:window._pic||''},start:new Date().setHours(0,0,0,0),off:0,days:{},ms:{},early:false,helps:0,show:{},pod:[['Amaka',1],['Tunde',0],['Zainab',1],['Chidi',1]]};card=true;save();render()}
+function pic(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=240;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,240,240);window._pic=c.toDataURL('image/jpeg',.8)};im.src=r.result};r.readAsDataURL(f)}
+function wrap(x,t,px,y,w,lh){let l='';t.split(' ').forEach(wd=>{if(x.measureText(l+wd).width>w){x.fillText(l,px,y);y+=lh;l=''}l+=wd+' '});x.fillText(l,px,y);return y+lh}
+function draw(c){const x=c.getContext('2d'),p=S.p;c.width=1080;c.height=1350;x.fillStyle='#b5149a';x.fillRect(0,0,1080,1350);x.fillStyle='#fbb73b';x.fillRect(0,1220,1080,130);x.fillStyle='#fff';x.font='800 44px sans-serif';x.fillText('30 DAYS SPRINT',70,110);
+const fin=()=>{x.fillStyle='#fff';x.font='800 78px sans-serif';let y=wrap(x,p.name,70,640,940,86);x.font='500 38px sans-serif';y=wrap(x,'Learning '+p.skill,70,y+10,940,50);x.font='700 44px sans-serif';y=wrap(x,'In 30 days: '+p.goal,70,y+30,940,58);x.font='500 36px sans-serif';wrap(x,'I will learn: '+p.learn+'. I will build: '+p.build+'. I will prove: '+p.prove+'.',70,y+30,940,48);x.fillStyle='#111';x.font='700 34px sans-serif';x.fillText('Sprint ID '+p.name.replace(/\W/g,'').slice(0,8).toUpperCase()+'-'+new Date(S.start).getFullYear(),70,1292)};
+if(p.pic){const im=new Image();im.onload=()=>{x.save();x.beginPath();x.arc(210,360,140,0,7);x.clip();x.drawImage(im,70,220,280,280);x.restore();fin()};im.src=p.pic}else fin()}
+function dl(id,name){const a=document.createElement('a');a.download=name;a.href=$(id).toDataURL('image/png');a.click();S.shared=(S.shared||0)+1;save()}
+const HOOK='https://hook.eu1.make.com/hqogkcosptaks8dpwm5p3mohsepyfe1n',READ='';
+let DB=null,myId=null,live=[];
+async function initLB(){try{if(!window.claude)return;const[u,d]=await Promise.all([claude.use('user'),claude.use('db')]);if(!u||!d)return;myId=await u.id();DB=d;d.collection('leaderboard').onSnapshot(s=>{live=s.docs.map(x=>({id:x.id,...x.data()}));if(tab=='rank'&&S&&!card)render()},()=>{DB=null});pushLB()}catch(e){DB=null}}
+function pushLB(){if(S&&HOOK){S.id=S.id||'p'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('s30',JSON.stringify(S))}catch(e){}fetch(HOOK,{method:'POST',mode:'no-cors',keepalive:true,body:new URLSearchParams({id:S.id,name:S.p.name,goal:S.p.goal,points:pts(),days:cnt(),consistency:cnt()*10,builds:Object.values(S.days).filter(d=>d.built).length*10,helps:S.helps*10,level:level(),streak:streak()})}).catch(()=>{})}if(!DB||!myId||!S)return;DB.doc('leaderboard/'+myId).set({n:S.p.name,o:pts(),c:cnt()*10,b:Object.values(S.days).filter(d=>d.built).length*10,h:S.helps*10,day:cur(),lvl:level()}).catch(()=>{})}
+function nav(){const n=$('#nav');n.hidden=!S||card;n.innerHTML=[['today','Today'],['sprint','Sprint'],['rank','Pod'],['show','Showcase'],['rules','Rules']].map(t=>`<button class="${tab==t[0]?'on':''}" onclick="tab='${t[0]}';edit=null;msg='';render()">${t[1]}</button>`).join('')}
+function onboard(){return`<h1>Welcome to your 30-day sprint</h1><p>You have 30 days to turn one learning goal into something tangible.</p>
+<form id="f" class="c" onsubmit="event.preventDefault();setup()"><label>Your focus</label><select name="focus"><option>Learn a new skill</option><option>Finish a course</option><option>Build a project</option><option>Improve an existing skill</option><option>Apply AI to an existing workflow</option><option>Other</option></select>
+<label>Name</label><input name="name" autocomplete="name"><label>Photo</label><input type="file" accept="image/*" onchange="pic(this)"><label>Short bio</label><input name="bio"><label>Skill you’re working on</label><input name="skill"><label>Your 30-day goal</label><input name="goal"><label>Your why</label><input name="why">
+<label>Daily time you can protect</label><select name="mins"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option><option value="180">3+ hours</option></select>
+<h3>What will exist because you spent 30 days learning?</h3><label>Day 30 outcome</label><input name="outcome" placeholder="An app, portfolio, design, workflow…"><label>I will learn</label><input name="learn"><label>I will build</label><input name="build"><label>I will prove it with</label><input name="prove" placeholder="Screenshots, links, a demo video…"><button class="big">Make my commitment</button></form>`}
+function cardView(){setTimeout(()=>draw($('#cv')));return`<h1>Your commitment card</h1><p class="mut">Share it so people can hold you to it.</p><canvas id="cv"></canvas><button class="big" onclick="dl('#cv','sprint-commitment.png')">Download card</button><p></p><button class="big g" onclick="card=false;render()">Start Day 1</button>`}
+function today(){const n=cur(),p=ph(n),[l,b,pf]=mins(),m=missed(),d=D(n);let h='';
+h+=`<div class="c hero pop"><div class="mut" style="color:inherit;opacity:.85">${esc(p[1])} phase</div><h1>Day ${n} of 30</h1><p>${30-n} days to go · ${esc(level())}</p><div class="bar"><i style="width:${cnt()/30*100}%"></i></div></div>`;
+if(msg)h+=`<div class="c pop"><b>${msg}</b></div>`;
+if(m==1)h+=`<div class="c warn"><h3>Yesterday didn’t happen. That’s okay.</h3><p>Your Sprint isn’t over.</p><div class="row"><button onclick="edit=${n-1};render()">Make up yesterday</button><button class="g" onclick="msg='Continuing today.';render()">Continue today</button><button class="g" onclick="S.plan=1;save();msg='Today’s plan is reset to one small task.';render()">Reset today’s plan</button></div></div>`;
+if(m==2)h+=`<div class="c warn"><h3>Two days missed. Let’s make it easy.</h3><p>Today: one ${Math.min(30,+S.p.mins)}-minute recovery mission. Tomorrow you return to your normal schedule. Your pod has been told you may need a nudge.</p></div>`;
+if(m>=3)h+=`<div class="c warn"><h3>It’s been ${m} days. What would help most?</h3><div class="row"><button onclick="S.off-=0;msg='Great. Do one small recovery mission today.';render()">Continue</button><button class="g" onclick="S.plan=1;save();msg='Plan reset to a smaller daily task.';render()">Reset my plan</button><button class="g" onclick="if(confirm('Withdraw from the sprint? Your data stays on this device.')){localStorage.removeItem('s30');S=null;render()}">Withdraw</button></div></div>`;
+if(done(n)&&edit==null)h+=`<div class="c pop"><h2>DAY ${n} COMPLETE. ${30-n} DAYS TO GO.</h2><p>${esc(coach())}</p></div>`;
+else if(edit!=null)h+=checkin(edit);
+else{const small=S.plan||m>=2;h+=`<div class="c"><h2>Today’s mission</h2><div class="step"><b>Learn</b><span>${small?10:l} min: one focused resource on ${esc(S.p.skill)}.</span></div><div class="step"><b>Build</b><span>${small?20:b} min: ${esc(p[2])}</span></div><div class="step"><b>Prove</b><span>${pf} min: add a link, screenshot or note.</span></div><button class="big" onclick="edit=${n};render()">Start today’s sprint</button></div>`}
+if(n%7==0&&n<=28||n==28)h+=review();
+const wk=Math.ceil(n/7);h+=`<div class="c"><div class="stats"><div><b>${streak()}</b>streak</div><div><b>${pts()}</b>points</div><div><b>${ratio()}%</b>action ratio</div></div></div>`;return h}
+function checkin(n){const d=D(n);return`<form id="ci" class="c" onsubmit="event.preventDefault();submitDay(${n})"><h2>Day ${n} check-in</h2><label>What did you learn?</label><textarea name="learned">${esc(d.learned)}</textarea><label>What did you build or apply with it?</label><textarea name="built">${esc(d.built)}</textarea><label>Proof (link or description)</label><input name="proof" value="${esc(d.proof)}"><label>How difficult was today?</label><select name="diff"><option>Too easy</option><option selected>Just right</option><option>Too hard</option></select><label>Next step</label><input name="next" value="${esc(d.next)}"><button class="big">Complete day</button></form>`}
+function submitDay(n){const f=new FormData($('#ci')),g=k=>(f.get(k)||'').trim();
+if(!g('built')){msg='What did you make with what you just learned? Nothing yet? Do a 10-minute application mission now: write, sketch or code one tiny piece, then describe it above.';render();window.scrollTo(0,0);return}
+const first=!done(n);S.days[n]={learned:g('learned'),built:g('built'),proof:g('proof'),diff:g('diff'),next:g('next'),done:1};
+if(!S.early&&n<=21&&n>=11&&g('proof'))S.early=true;edit=null;msg=first?'+'+(10+25+(g('proof')?15:0)+(g('next')?5:0))+' points. Streak: '+streak()+' days.':'Saved.';if(cnt()==3)msg+=' You’ve unlocked SPRINTER status.';save();render()}
+function review(){const w=Math.ceil(cur()/7);if(S.ms[w])return`<div class="c"><b>Week ${w} milestone complete. +50</b></div>`;return`<form id="wr" class="c" onsubmit="event.preventDefault();const f=new FormData(this);if(!(f.get('s')||'').trim()){alert('Show one artifact to unlock the next week.');return}S.ms[${w}]=1;msg='Week ${w} milestone complete. +50 points.';save();render()"><h2>Week ${w} review</h2><p class="mut">${['Foundation','Application','Build','Finish'][w-1]||'Finish'} week.</p><label>Look back: what did you learn?</label><input name="a"><label>Show: what did you build? (required)</label><input name="s"><label>Evaluate: what is working?</label><input name="e"><label>Identify: where are you stuck?</label><input name="i"><label>Plan: what must happen next week?</label><input name="p"><button class="big">Complete milestone</button></form>`}
+function sprint(){const n=cur(),lab=[[1,'Intention'],[5,'Artifact'],[10,'Prototype'],[15,'Core functionality'],[21,'Working version'],[27,'Refinement'],[30,'Final product']];
+const m=Object.entries(S.days).filter(e=>e[1].done).slice(-5).reverse();
+return`<h1>My sprint</h1><div class="c"><h3>${esc(S.p.goal)}</h3><p class="mut">Why: ${esc(S.p.why)||'—'}</p><p>I will learn ${esc(S.p.learn)}. I will build ${esc(S.p.build)}. I will prove it with ${esc(S.p.prove)}.</p></div>
+<div class="c"><h3>Sprint map</h3><div class="map">${lab.map(a=>`<div class="${n>=a[0]?(done(a[0])||n>a[0]?'d':'n'):''}"><b>Day ${a[0]}</b> ${a[1]}${D(a[0]).built?`<div class="mut">${esc(D(a[0]).built.slice(0,90))}</div>`:''}</div>`).join('')}</div></div>
+<div class="c"><h3>Progress</h3><p>${cnt()} of 30 days complete · level ${level()}</p><div class="bar"><i style="width:${cnt()/30*100}%"></i></div><p class="mut">Next milestone: ${n<=7?'Week 1 review':n<=14?'Week 2 review':n<=21?'Week 3 review':'Week 4 review and showcase'}</p></div>
+<div class="c"><h3>Sprint coach</h3><p>${esc(coach())}</p></div>
+<div class="c"><h3>Recent work</h3>${m.length?m.map(e=>`<p><b>Day ${e[0]}:</b> ${esc(e[1].built)}</p>`).join(''):'<p class="mut">Complete a day to see your work here.</p>'}</div>
+<button class="g" onclick="S.off++;save();render()">Demo: jump to next day</button>`}
+function rank(){if(READ&&Date.now()-(window._lt||0)>20000){window._lt=Date.now();fetch(READ).then(r=>r.json()).then(a=>{live=a.map(x=>({id:x.id,n:x.id===S.id?'You':x.name,o:+x.points||0,c:+x.consistency||0,b:+x.builds||0,h:+x.helps||0}));if(tab=='rank')render()}).catch(()=>{})}const t=cnt(),p=pts(),base=[['Ife',1.1,.9],['Kemi',.8,1],['Sam',1,.7],['Bola',.6,.8],['Dayo',.9,1.1]],me={n:'You',o:p,c:t*10,b:Object.values(S.days).filter(d=>d.built).length*10,h:S.helps*10};
+const rows=live.length?live.map(x=>({n:x.id===myId?'You':x.n,o:x.o||0,c:x.c||0,b:x.b||0,h:x.h||0})):base.map(a=>({n:a[0],o:Math.round(cur()*60*a[1]),c:Math.round(cur()*9*a[2]),b:Math.round(cur()*8*a[1]),h:Math.round(a[2]*cur()/2)*5})).concat(me);const k={Overall:'o',Consistency:'c',Building:'b',Helpful:'h'}[lb];rows.sort((a,b)=>b[k]-a[k]);
+return`<h1>Pod and leaderboard</h1><div class="c"><h3>Your accountability pod</h3>${S.pod.map(p=>`<div class="row sp"><span>${p[0]}</span><span class="tag">${p[1]?'Checked in today':'Not yet'}</span></div>`).join('')}<p class="mut">Pod members see check-in status, never your reflections.</p><p><b>Ask → Help → Move.</b> Ask one specific question, help one person, then return to your mission.</p><button onclick="S.helps++;save();msg='+10 points for helping.';render()">I helped a podmate</button> <span class="mut">Helped: ${S.helps}</span></div>
+<div class="row" style="margin-bottom:10px">${['Overall','Consistency','Building','Helpful'].map(x=>`<button class="${lb==x?'':'g'}" onclick="lb='${x}';render()">${x}</button>`).join('')}</div>
+<div class="c"><table>${rows.map((r,i)=>`<tr class="${r.n=='You'?'me':''}"><td>${i+1}</td><td>${r.n}</td><td>${r[k]} pts</td></tr>`).join('')}</table><p class="mut">${live.length?'Live cohort.':'Sample cohort shown until the live leaderboard connects.'} Rank is motivation only; winners are chosen by judges on evidence.</p></div>`}
+function est(){const dd=Object.values(S.days).filter(d=>d.done),c=dd.length,f=x=>dd.filter(x).length;return[['Consistency & Accountability',20,Math.round(c/30*20)],['Learning Progress',15,Math.round(f(d=>d.learned)/30*15)],['Practical Application',20,Math.round(f(d=>d.built&&d.proof)/30*20)],['Tangible Build / Final Outcome',25,S.show.result?(S.show.proof?25:15):0],['Problem-Solving & Improvement',10,Math.min(10,Math.round(f(d=>d.next)/30*10)+(S.early?2:0))],['Documentation & Reflection',5,Math.min(5,Math.round(f(d=>d.next&&d.learned)/30*5)+(S.show.journey?1:0))],['Community Contribution',5,Math.min(5,S.helps)]]}
+function show(){const s=S.show,p=S.p;if(cur()<28&&!s.result&&!S.force)return`<h1>Showcase</h1><div class="c"><p>Your showcase opens in the final 72 hours. Day 28: finish the core build. Day 29: document the transformation. Day 30: show what you built.</p><p class="mut">Keep building. It is Day ${cur()}.</p><button class="g" onclick="S.force=1;save();render()">Open early</button></div>`;
+window.F=[['before','Before: where were you at Day 1?'],['journey','Journey: how did you get here?'],['result','Final result: what exists now?'],['proof','Proof: link or evidence'],['lesson','Lesson: what did you learn?'],['nextstep','Next step: what will you do now?']];
+const view=s.result?`<div class="c pop hero"><h2>${esc(p.name)}: ${esc(p.skill)}</h2><p><b>Goal:</b> ${esc(p.goal)}</p><p><b>Before:</b> ${esc(s.before)}</p><p><b>Result:</b> ${esc(s.result)}</p><p><b>Proof:</b> ${esc(s.proof)}</p><p><b>Lesson:</b> ${esc(s.lesson)}</p><p>${cnt()} days completed · ${maxStreak()}-day best streak · Next: ${esc(s.nextstep)}</p><button onclick="navigator.clipboard&&navigator.clipboard.writeText(document.querySelector('.hero').innerText);msg='Showcase copied.';render()">Copy showcase</button></div>`:'';
+return`<h1>Final showcase</h1>${msg?`<div class="c"><b>${msg}</b></div>`:''}${view}<form class="c" onsubmit="event.preventDefault();const f=new FormData(this);F.forEach(a=>S.show[a[0]]=(f.get(a[0])||'').trim());msg='Showcase saved. +100 points.';save();render()"><h3>Build your showcase</h3>${F.map(a=>`<label>${a[1]}</label><textarea name="${a[0]}">${esc(s[a[0]])}</textarea>`).join('')}<button class="big">Save showcase</button></form>`}
+function rules(){const e=est(),t=e.reduce((a,b)=>a+b[2],0);
+return`<h1>Judging and points</h1><div class="c"><h3>Judging criteria (100 points)</h3><table>${e.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><b>${r[2]}</b></td></tr>`).join('')}<tr><td><b>Your evidence score</b></td><td>100</td><td><b>${t}</b></td></tr></table><p class="mut">Shortlists come from evidence scores. Judges then review the submitted work. Popularity and raw rank never decide winners. Top 3 receive an Award of Recognition; everyone who finishes gets completion recognition.</p></div>
+<div class="c"><h3>Points</h3><table>${[['Daily learning',10],['Daily build task',25],['Evidence submitted',15],['Daily reflection',5],['3 / 7 / 14 / 21-day streak','10 / 25 / 50 / 75'],['Weekly milestone',50],['Early build',75],['Helping a participant',10],['Complete Day 30',150],['Final showcase',100]].map(r=>`<tr><td>${r[0]}</td><td>+${r[1]}</td></tr>`).join('')}</table><p class="mut">Building earns more than consuming.</p></div>
+<div class="c"><h3>Reminders</h3><p>Morning: “Your ${S.p.mins}-minute Sprint is waiting.”<br>Evening: “You still have time to complete today’s mission.”<br>Late: “Don’t let today become a zero.”</p></div>
+<button class="g" onclick="if(confirm('Erase your sprint on this device?')){localStorage.removeItem('s30');S=null;card=false;render()}">Reset sprint</button>`}
+function render(){const a=$('#app');if(!S){a.innerHTML=onboard();$('#nav').hidden=true;return}
+a.innerHTML=card?cardView():{today,sprint,rank,show,rules}[tab]();nav();window.scrollTo(0,0)}
+render();initLB()
+</script></body></html>
